@@ -76,7 +76,7 @@ public bool DoAuthenticatedCall(
 Configuring `ChannelCredentials` on a channel is an alternative way to send the token to the service with gRPC calls. A `ChannelCredentials` can include `CallCredentials`, which provide a way to automatically set `Metadata`. `CallCredentials` is run each time a gRPC call is made, which avoids the need to write code in multiple places to pass the token yourself.
 
 > [!NOTE]
-> `CallCredentials` are only applied if the channel is secured with TLS. Sending authentication headers over an insecure connection has security implications and shouldn't be done in production environments. An app can configure a channel to ignore this behavior, and always use `CallCredentials`, by setting `UnsafeUseInsecureChannelCallCredentials` on a channel.
+> `CallCredentials` are only applied if the channel is secured with TLS. Sending authentication headers over an insecure connection has security implications and shouldn't be done in production environments. An app can configure a channel to ignore this behavior and always use `CallCredentials` by setting `UnsafeUseInsecureChannelCallCredentials` on a channel.
 
 The credential in the following example configures the channel to send the token with every gRPC call:
 
@@ -102,7 +102,7 @@ private static GrpcChannel CreateAuthenticatedChannel(string address)
 
 #### Bearer token with gRPC client factory
 
-gRPC client factory can create clients that send a bearer token using `AddCallCredentials`. The delegate passed to `AddCallCredentials` is executed for each gRPC call.
+gRPC client factory can create clients that send a bearer token using `AddCallCredentials`. The delegate passed to `AddCallCredentials` is executed for each gRPC call:
 
 ```csharp
 builder.Services
@@ -120,7 +120,7 @@ builder.Services
     });
 ```
 
-Dependency injection (DI) can be combined with `AddCallCredentials`. An overload passes `IServiceProvider` to the delegate which can be used to get a service [constructed from DI using scoped and transient services](/dotnet/core/extensions/dependency-injection#service-lifetimes).
+Dependency injection (DI) can be combined with `AddCallCredentials`. An overload passes `IServiceProvider` to the delegate, which can be used to get a service [constructed from DI using scoped and transient services](/dotnet/core/extensions/dependency-injection#service-lifetimes).
 
 Consider an app that has:
 
@@ -169,7 +169,7 @@ builder.Services
 The preceding code:
 
 * Defines `ITokenProvider` and `AppTokenProvider`. These types handle resolving the authentication token for gRPC calls.
-* Registers the `AppTokenProvider` type with DI in a scoped lifetime. `AppTokenProvider` caches the token so only the first call in the scope will need to calculate it.
+* Registers the `AppTokenProvider` type with DI in a scoped lifetime. `AppTokenProvider` caches the token so that only the first call in the scope is required to calculate it.
 * Registers the `GreeterClient` type with client factory.
 * Configures `AddCallCredentials` for this client. The delegate is executed each time a call is made and adds the token returned by `ITokenProvider` to the metadata.
 
